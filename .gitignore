@@ -1,0 +1,7 @@
+node_modules/
+dist/
+Lab05-Testing.pdf
+Lab05-Testing-Index.html
+.DS_Store
+test-results/
+playwright-report/
