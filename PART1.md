@@ -1,5 +1,8 @@
 # Part 1 – Understanding STILLFRAME
 
+- **Repository:** https://github.com/Nandi0813/stillframe
+- **Playable game (GitHub Pages):** https://nandi0813.github.io/stillframe/
+
 Source analysed: the original single-file `index.html` (7,421 lines, first commit `410810e`).
 Line numbers below refer to that file.
 
