@@ -22,6 +22,8 @@ async function boot() {
   }
   game = new Game(gfx, canvas, overlayEl);
   game.start();
+  // Dev-only handle for console debugging and Playwright tests; stripped from production builds.
+  if (import.meta.env.DEV) (window as any).__game = game;
 }
 boot().catch((err) => {
   console.error("[boot] fatal:", err);

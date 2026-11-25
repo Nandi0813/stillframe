@@ -25,7 +25,8 @@ fn fsFinal(fin : FullOut) -> @location(0) vec4f {
   let centered = uv - vec2f(0.5);
   let radial = dot(centered, centered);
 
-  let ca = post.grade.z * radial;
+  // grade.z is a 0..1 strength; scale it to a few pixels of fringe, not a share of the screen.
+  let ca = post.grade.z * radial * 0.08;
   let offs = centered * ca;
   var color = vec3f(
     textureSampleLevel(compTex, linearSampler, uv + offs, 0.0).r,
