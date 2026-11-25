@@ -128,12 +128,6 @@ export const StaticWorld = class {
         continue;
       }
       if (axis === 1) {
-        // Only land on / bump into a box we were outside of before this move. A body that
-        // already overlaps a box (e.g. spawned inside a pole or crate) is pushed out sideways
-        // instead of being teleported onto its top.
-        const prevY = pos[1] - d;
-        if (d < 0 ? prevY < b.max[1] - EPS : prevY + h > b.min[1] + EPS)
-          continue;
         if (d < 0) {
           pos[1] = b.max[1];
           res.grounded = true;
