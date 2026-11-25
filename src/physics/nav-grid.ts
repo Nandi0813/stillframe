@@ -1,4 +1,4 @@
-export const CELL2 = 0.5;
+export const CELL2 = 0.25;
 export const AGENT_RADIUS = 0.32;
 export const STEP = 0.4;
 export const HEADROOM = 1.75;
@@ -41,25 +41,26 @@ export const NavGrid = class {
         const x = this.originX + (cx + 0.5) * CELL2;
         const z = this.originZ + (cz + 0.5) * CELL2;
         this.world.query(x - AGENT_RADIUS, z - AGENT_RADIUS, x + AGENT_RADIUS, z + AGENT_RADIUS, cand);
-        let floorY = -Infinity;
+        // Candidate standing surfaces: tops of boxes under the cell centre. Taking the highest
+        // one turned low roofs and door lintels into "floors"; instead take the lowest surface
+        // with headroom, then step up onto anything within STEP of it (stairs, kerbs).
+        const tops = [];
         for (const i of cand) {
           const bx = boxes[i];
-          if (x >= bx.min[0] && x <= bx.max[0] && z >= bx.min[2] && z <= bx.max[2] && bx.max[1] <= MAX_FLOOR && bx.max[1] > floorY) {
-            floorY = bx.max[1];
-          }
+          if (x >= bx.min[0] && x <= bx.max[0] && z >= bx.min[2] && z <= bx.max[2] && bx.max[1] <= MAX_FLOOR)
+            tops.push(bx.max[1]);
         }
-        if (floorY === -Infinity)
+        const clear = tops.filter((top) => !cand.some((i) => {
+          const bx = boxes[i];
+          return bx.min[0] < x + AGENT_RADIUS && bx.max[0] > x - AGENT_RADIUS && bx.min[2] < z + AGENT_RADIUS && bx.max[2] > z - AGENT_RADIUS && bx.max[1] > top + STEP && bx.min[1] < top + HEADROOM;
+        })).sort((a, b) => a - b);
+        if (clear.length === 0)
           continue;
-        let blocked = false;
-        for (const i of cand) {
-          const bx = boxes[i];
-          if (bx.min[0] < x + AGENT_RADIUS && bx.max[0] > x - AGENT_RADIUS && bx.min[2] < z + AGENT_RADIUS && bx.max[2] > z - AGENT_RADIUS && bx.max[1] > floorY + STEP && bx.min[1] < floorY + HEADROOM) {
-            blocked = true;
-            break;
-          }
-        }
-        if (!blocked)
-          this.floor[cz * this.w + cx] = floorY;
+        let floorY = clear[0];
+        for (const top of clear)
+          if (top <= clear[0] + STEP)
+            floorY = top;
+        this.floor[cz * this.w + cx] = floorY;
       }
     }
   }
@@ -112,7 +113,7 @@ export const NavGrid = class {
     }
     return -1;
   }
-  findPath(from, to, maxExpansions = 4e3) {
+  findPath(from, to, maxExpansions = 16e3) {
     const start = this.nearestWalkable(from[0], from[2], from[1]);
     const goal = this.nearestWalkable(to[0], to[2], to[1]);
     if (start < 0 || goal < 0)
