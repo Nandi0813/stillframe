@@ -128,15 +128,17 @@
 
       if (item && GUNS.has(item.kind) && item.ammo > 0) {
         const err = aimAt(g, head);
-        if (visible(e)) { walk(g, p.pos, dodge); if (err < 0.03 && w.player.fireCooldown <= 0) tap('mouse', 0); }
+        const strafe = (performance.now() / 400 | 0) % 2 ? 1 : -1;
+        if (visible(e)) { walk(g, p.pos, dodge || (w.player.fireCooldown > 0 ? strafe : 0)); if (err < 0.03 && w.player.fireCooldown <= 0) tap('mouse', 0); }
         else walk(g, e.pos, dodge);
       } else if (item && !GUNS.has(item.kind) && item.kind !== 'blade' && dist(e.pos) < 9 && visible(e)) {
         const d = dist(e.pos), t = d / 15;
         const err = aimAt(g, [head[0], head[1] + 0.5 * 16 * t * t - 1.2 * t, head[2]]);
-        walk(g, p.pos, dodge);
+        walk(g, p.pos, dodge || (w.player.fireCooldown > 0 ? ((performance.now() / 400 | 0) % 2 ? 1 : -1) : 0));
         if (err < 0.03) tap('mouse', 0);
       } else if (item && GUNS.has(item.kind)) {
-        tap('mouse', 0); // empty gun: throw it
+        aimAt(g, head); walk(g, e.pos, dodge);
+        tap('mouse', 0); // empty gun: throw it (cooldowns run on sim time, so keep moving)
       } else if (!item && (gunProp && dist(gunProp.pos) < 12 || anyProp && dist(anyProp.pos) < 4 && dist(e.pos) > 3)) {
         const pr = gunProp && dist(gunProp.pos) < 12 ? gunProp : anyProp;
         aimAt(g, pr.pos);
