@@ -16,7 +16,7 @@ export const TimeScaleDriver = class _TimeScaleDriver {
   actionKick() {
     this.kick = _TimeScaleDriver.KICK_TIME;
   }
-  update(realDt, planarSpeed, maxSpeed, lookSpeed, airborne, busy) {
+  update(realDt: number, planarSpeed: number, maxSpeed: number, lookSpeed: number, airborne: boolean, busy: boolean) {
     this.kick = Math.max(0, this.kick - realDt);
     const moveInput = clamp(planarSpeed / maxSpeed, 0, 1);
     const lookInput = clamp(lookSpeed / _TimeScaleDriver.LOOK_FULL, 0, 1) * _TimeScaleDriver.LOOK_WEIGHT;
