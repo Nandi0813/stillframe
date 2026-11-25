@@ -37,7 +37,7 @@ export const car = level({
   theme: "transit",
   words: ["NOWHERE", "TO", "RUN."],
   seed: 102,
-  player: { pos: [0, 0, 0], yaw: 0, item: "pistol" },
+  player: { pos: [0, 0, 2], yaw: 0, item: "pistol" },
   props: [
     { kind: "mug", pos: [-1.2, 0.6, 3] },
     { kind: "bottle", pos: [-1.2, 0.6, -3] }
